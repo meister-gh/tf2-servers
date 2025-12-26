@@ -1,4 +1,5 @@
 ARG REGISTRY=ghcr.io
+ARG OWNER=melkortf
 ARG TF2_BASE_TAG=latest
 ARG ARCH=i386
 
@@ -21,7 +22,7 @@ ARG SOURCEMOD_CHECKSUM=86caf2da0b1e9503c01296b175ace4662106880b57123abf88961feeb
 ADD --checksum=sha256:${SOURCEMOD_CHECKSUM} ${SOURCEMOD_URL} .
 RUN tar xf "${SOURCEMOD_FILE_NAME}" -C "${INSTALL_DIR}/"
 
-FROM ${REGISTRY}/melkortf/tf2-base/${ARCH}:${TF2_BASE_TAG}
+FROM ${REGISTRY}/${OWNER}/tf2-base/${ARCH}:${TF2_BASE_TAG}
 LABEL maintainer="garrappachc@gmail.com"
 
 ARG INSTALL_DIR=/server/tf

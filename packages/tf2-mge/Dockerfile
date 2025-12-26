@@ -1,4 +1,5 @@
 ARG REGISTRY=ghcr.io
+ARG OWNER=melkortf
 ARG TF2_SOURCEMOD_TAG=latest
 
 FROM ubuntu:22.04 AS plugins
@@ -32,7 +33,7 @@ ARG AFK_MANAGER_URL=https://www.sourcemod.net/vbcompiler.php?file_id=170330
 ARG AFK_MANAGER_CHECKSUM=cd41cf4195f8e54c579ed4fe730457a5c81f8007478ff9cd75b9659f8859c22b
 ADD --checksum=sha256:${AFK_MANAGER_CHECKSUM} ${AFK_MANAGER_URL} "${PLUGIN_INSTALL_DIR}/addons/sourcemod/plugins/${AFK_MANAGER_FILE_NAME}"
 
-FROM ${REGISTRY}/melkortf/tf2-sourcemod/i386:${TF2_SOURCEMOD_TAG}
+FROM ${REGISTRY}/${OWNER}/tf2-sourcemod/i386:${TF2_SOURCEMOD_TAG}
 LABEL maintainer="garrappachc@gmail.com"
 
 ARG PLUGIN_INSTALL_DIR=/server/tf

@@ -1,4 +1,5 @@
 ARG REGISTRY=ghcr.io
+ARG OWNER=melkortf
 ARG TF2_SOURCEMOD_TAG=latest
 
 FROM ubuntu:22.04 AS plugins
@@ -52,7 +53,7 @@ ARG CLASS_RESTRICT_URL=https://www.sourcemod.net/vbcompiler.php?file_id=27957
 ARG CLASS_RESTRICT_CHECKSUM=bce83fef7c80f66f0d1a102433aebdd5201d8ef2e3e5ea4442d1fe30f84938e9
 ADD --checksum=sha256:${CLASS_RESTRICT_CHECKSUM} ${CLASS_RESTRICT_URL} "${PLUGIN_INSTALL_DIR}/addons/sourcemod/plugins/${CLASS_RESTRICT_FILE_NAME}"
 
-FROM ${REGISTRY}/melkortf/tf2-sourcemod/i386:${TF2_SOURCEMOD_TAG}
+FROM ${REGISTRY}/${OWNER}/tf2-sourcemod/i386:${TF2_SOURCEMOD_TAG}
 LABEL maintainer="garrappachc@gmail.com"
 
 ARG PLUGIN_INSTALL_DIR=/server/tf

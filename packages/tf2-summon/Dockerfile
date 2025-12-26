@@ -1,4 +1,5 @@
 ARG REGISTRY=ghcr.io
+ARG OWNER=melkortf
 ARG TF2_SOURCEMOD_TAG=latest
 
 FROM ubuntu:22.04 AS plugins
@@ -174,7 +175,7 @@ ARG WEBRCON_PLUGIN_CHECKSUM=74d2ee3f628260e77b495b6cb6c975d7e2bf8462cb7d967f14ad
 ADD --checksum=sha256:${WEBRCON_PLUGIN_CHECKSUM} ${WEBRCON_PLUGIN_URL} .
 RUN cp "${WEBRCON_PLUGIN_FILE_NAME}" "${PLUGIN_INSTALL_DIR}/addons/sourcemod/plugins/${WEBRCON_PLUGIN_FILE_NAME}"
 
-FROM ${REGISTRY}/melkortf/tf2-sourcemod/i386:${TF2_SOURCEMOD_TAG}
+FROM ${REGISTRY}/${OWNER}/tf2-sourcemod/i386:${TF2_SOURCEMOD_TAG}
 LABEL maintainer="garrappachc@gmail.com"
 
 ARG PLUGIN_INSTALL_DIR=/server/tf

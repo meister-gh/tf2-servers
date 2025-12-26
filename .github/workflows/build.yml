@@ -148,6 +148,7 @@ jobs:
         with:
           context: ./packages/tf2-sourcemod
           build-args: |
+            OWNER=${{ env.OWNER }}
             ARCH=i386
             TF2_BASE_TAG=${{ needs.tf2-base-i386.outputs.tf2-base-i386-tag }}
           tags: ${{ steps.docker_meta.outputs.tags }}
@@ -193,6 +194,7 @@ jobs:
         with:
           context: ./packages/tf2-sourcemod
           build-args: |
+            OWNER=${{ env.OWNER }}
             ARCH=amd64
             TF2_BASE_TAG=${{ needs.tf2-base-amd64.outputs.tf2-base-amd64-tag }}
           tags: ${{ steps.docker_meta.outputs.tags }}
@@ -237,6 +239,7 @@ jobs:
         with:
           context: ./packages/tf2-mge
           build-args: |
+            OWNER=${{ env.OWNER }}
             TF2_SOURCEMOD_TAG=${{ needs.tf2-sourcemod-i386.outputs.tf2-sourcemod-i386-tag }}
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
@@ -280,6 +283,7 @@ jobs:
         with:
           context: ./packages/tf2-competitive
           build-args: |
+            OWNER=${{ env.OWNER }}
             TF2_SOURCEMOD_TAG=${{ needs.tf2-sourcemod-i386.outputs.tf2-sourcemod-i386-tag }}
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
@@ -323,6 +327,7 @@ jobs:
         with:
           context: ./packages/tf2-dm
           build-args: |
+            OWNER=${{ env.OWNER }}
             TF2_SOURCEMOD_TAG=${{ needs.tf2-sourcemod-i386.outputs.tf2-sourcemod-i386-tag }}
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
@@ -366,6 +371,7 @@ jobs:
         with:
           context: ./packages/tf2-summon
           build-args: |
+            OWNER=${{ env.OWNER }}
             TF2_SOURCEMOD_TAG=${{ needs.tf2-sourcemod-i386.outputs.tf2-sourcemod-i386-tag }}
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
