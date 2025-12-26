@@ -18,7 +18,7 @@ sv_mincmdrate 66
 sv_maxcmdrate 66
 
 // Download URL
-sv_downloadurl "${SV_DOWNLOADURL}"
+sv_downloadurl "${DOWNLOAD_URL}"
 sv_allowdownload 1
 sv_allowupload 1
 
