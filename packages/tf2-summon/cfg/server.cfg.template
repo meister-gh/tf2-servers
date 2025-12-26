@@ -1,0 +1,25 @@
+// Server configuration for tf2-summon
+// Customize these values as needed
+
+hostname "${SERVER_HOSTNAME}"
+rcon_password "${RCON_PASSWORD}"
+sv_password "${SV_PASSWORD}"
+
+// Logging
+sv_logflush 1
+log on
+
+// Network
+sv_minrate 0
+sv_maxrate 0
+sv_minupdaterate 66
+sv_maxupdaterate 66
+sv_mincmdrate 66
+sv_maxcmdrate 66
+
+// SourceTV
+tv_enable 1
+tv_title "${TV_TITLE}"
+tv_maxclients 32
+tv_delay 90
+tv_delaymapchange 1
