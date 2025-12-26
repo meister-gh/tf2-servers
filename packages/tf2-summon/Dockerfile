@@ -187,5 +187,6 @@ RUN mkdir -p "${SERVER_DIR}/tf/addons/sourcemod/plugins/disabled" \
 
 ENV DEMOS_TF_APIKEY=
 ENV LOGS_TF_APIKEY=
+ENV SV_DOWNLOADURL=https://fastdl.arctic.tf/tf/
 
 COPY cfg/* ${SERVER_DIR}/tf/cfg/
