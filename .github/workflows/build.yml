@@ -1,6 +1,7 @@
 name: Build Docker images
 
 on:
+  workflow_dispatch: # Manual trigger
   schedule:
     - cron: "0 0 * * *" # At 00:00.
   push:
