@@ -3,6 +3,7 @@ ARG OWNER=melkortf
 ARG TF2_SOURCEMOD_TAG=latest
 
 FROM ubuntu:22.04 AS plugins
+SHELL ["/bin/bash", "-c"]
 RUN export DEBIAN_FRONTEND=noninteractive \
   && export TZ=Etc/UTC \
   && apt-get -y update \
@@ -14,24 +15,45 @@ WORKDIR /download
 ARG PLUGIN_INSTALL_DIR=/server/tf
 RUN mkdir -p "${PLUGIN_INSTALL_DIR}"
 
+# MGEMod (maxijabase fork)
 ARG MGEMOD_FILE_NAME=mge.zip
-ARG MGEMOD_VERSION=v3.0.7
-ARG MGEMOD_URL=https://github.com/sapphonie/MGEMod/releases/download/${MGEMOD_VERSION}/${MGEMOD_FILE_NAME}
-ARG MGEMOD_CHECKSUM=cb0abb7915d2e3074a80f6e4bd28423cfe038e89f85dc7acd55652c8bd229117
+ARG MGEMOD_VERSION=v3.1.0-beta9
+ARG MGEMOD_URL=https://github.com/maxijabase/MGEMod/releases/download/${MGEMOD_VERSION}/${MGEMOD_FILE_NAME}
+ARG MGEMOD_CHECKSUM=6ae2ac3f31085eeadaac7e89c2080a5123f3bc47ef8961d5a770e3506066d81d
 ADD --checksum=sha256:${MGEMOD_CHECKSUM} ${MGEMOD_URL} .
 RUN unzip -q -n "${MGEMOD_FILE_NAME}" -d "${PLUGIN_INSTALL_DIR}/"
 
-ARG SOURCEBANS_VERSION=1.6.4
-ARG SOURCEBANS_FILE_NAME=sourcebans-pp-${SOURCEBANS_VERSION}.plugin-only.tar.gz
+# SourceBans++
+ARG SOURCEBANS_VERSION=1.7.0
+ARG SOURCEBANS_FILE_NAME=sourcebans-pp-${SOURCEBANS_VERSION}.plugins-only.tar.gz
 ARG SOURCEBANS_URL=https://github.com/sbpp/sourcebans-pp/releases/download/${SOURCEBANS_VERSION}/${SOURCEBANS_FILE_NAME}
-ARG SOURCEBANS_CHECKSUM=f949fcb3f0dc37e39b6d2257ba902a1d67d49b854b46d6f7a061a76e6b7994b1
+ARG SOURCEBANS_CHECKSUM=07ac3d745d544a8b93d2ccad148edcaea802960982d9776b4bea0eea5e792bd4
 ADD --checksum=sha256:${SOURCEBANS_CHECKSUM} ${SOURCEBANS_URL} .
 RUN tar xf "${SOURCEBANS_FILE_NAME}" -C "${PLUGIN_INSTALL_DIR}/"
 
-ARG AFK_MANAGER_FILE_NAME=afk_manager4.smx
-ARG AFK_MANAGER_URL=https://www.sourcemod.net/vbcompiler.php?file_id=170330
-ARG AFK_MANAGER_CHECKSUM=cd41cf4195f8e54c579ed4fe730457a5c81f8007478ff9cd75b9659f8859c22b
-ADD --checksum=sha256:${AFK_MANAGER_CHECKSUM} ${AFK_MANAGER_URL} "${PLUGIN_INSTALL_DIR}/addons/sourcemod/plugins/${AFK_MANAGER_FILE_NAME}"
+# SM_Neocurl (dependency for some plugins)
+ARG NEOCURL_FILE_NAME=sm-neocurl-repack.zip
+ARG NEOCURL_VERSION=v2.0.1-beta1
+ARG NEOCURL_URL=https://github.com/sapphonie/SM-neocurl-ext/releases/download/${NEOCURL_VERSION}/${NEOCURL_FILE_NAME}
+ARG NEOCURL_CHECKSUM=cddbef00ca5b4b2a14c35fd062fe18586fb42f68c6d6366bf74f5b72a5734e44
+ADD --checksum=sha256:${NEOCURL_CHECKSUM} ${NEOCURL_URL} .
+RUN unzip -q -o "${NEOCURL_FILE_NAME}" -d "${PLUGIN_INSTALL_DIR}/addons/sourcemod/"
+
+# STAC Anti-Cheat
+ARG STAC_FILE_NAME=stac.zip
+ARG STAC_VERSION=v6.3.8
+ARG STAC_URL=https://github.com/sapphonie/StAC-tf2/releases/download/${STAC_VERSION}/${STAC_FILE_NAME}
+ARG STAC_CHECKSUM=ec64fc4f697754038526591cc8ef6a99d331b5e962eac36d968dfb25c0c69957
+ADD --checksum=sha256:${STAC_CHECKSUM} ${STAC_URL} .
+RUN unzip -q -o "${STAC_FILE_NAME}" -d "${PLUGIN_INSTALL_DIR}/addons/sourcemod/"
+
+# Map Downloader (pinned to commit)
+ARG MAPDOWNLOADER_COMMIT=729db2ea9e7f353ca67d2c7c19e1cd1dc473928c
+ARG MAPDOWNLOADER_PLUGIN_FILE_NAME=mapdownloader.smx
+ARG MAPDOWNLOADER_PLUGIN_URL=https://github.com/spiretf/mapdownloader/raw/${MAPDOWNLOADER_COMMIT}/plugin/${MAPDOWNLOADER_PLUGIN_FILE_NAME}
+ARG MAPDOWNLOADER_PLUGIN_CHECKSUM=53d4a64d40a939837dd3dfbf41aa3e682c421da44efb4f16c3db397aa2901ed2
+ADD --checksum=sha256:${MAPDOWNLOADER_PLUGIN_CHECKSUM} ${MAPDOWNLOADER_PLUGIN_URL} .
+RUN cp "${MAPDOWNLOADER_PLUGIN_FILE_NAME}" "${PLUGIN_INSTALL_DIR}/addons/sourcemod/plugins/${MAPDOWNLOADER_PLUGIN_FILE_NAME}"
 
 FROM ${REGISTRY}/${OWNER}/tf2-sourcemod/i386:${TF2_SOURCEMOD_TAG}
 LABEL maintainer="garrappachc@gmail.com"
@@ -41,9 +63,9 @@ COPY --from=plugins --chown=tf2 "${PLUGIN_INSTALL_DIR}/" "${SERVER_DIR}/tf/"
 
 RUN mv "${SERVER_DIR}/tf/addons/sourcemod/plugins/"{funcommands,funvotes}.smx "${SERVER_DIR}/tf/addons/sourcemod/plugins/disabled/"
 
-ENV SELECTED_MAP="mge_training_v8_beta4b"
+ENV SELECTED_MAP="mge_chillypunch_final4_fix2"
+ENV DOWNLOAD_URL=
+ENV SM_MAP_DOWNLOAD_BASE=
 
 COPY server.cfg.template "${SERVER_DIR}/tf/cfg/server.cfg.template"
 COPY mapcycle.txt.template "${SERVER_DIR}/tf/cfg/mapcycle.txt.template"
-COPY afk_manager.cfg "${SERVER_DIR}/tf/cfg/sourcemod/afk_manager.cfg"
-COPY afk_manager.phrases.txt "${SERVER_DIR}/tf/addons/sourcemod/translations/afk_manager.phrases.txt"
