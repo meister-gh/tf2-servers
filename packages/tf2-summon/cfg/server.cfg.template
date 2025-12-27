@@ -23,7 +23,7 @@ sv_allowdownload 1
 sv_allowupload 1
 
 // Map Downloader
-sm_cvar sm_map_download_base "https://fastdl.arctic.tf/tf/maps/"
+sm_cvar sm_map_download_base "${SM_MAP_DOWNLOAD_BASE}"
 
 // SourceTV
 tv_enable 1
