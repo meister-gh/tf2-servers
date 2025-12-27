@@ -31,3 +31,8 @@ tv_title "${TV_TITLE}"
 tv_maxclients 32
 tv_delay 90
 tv_delaymapchange 1
+
+// Logs & Demos
+logstf_apikey "${LOGS_TF_APIKEY}"
+sm_demostf_apikey "${DEMOS_TF_APIKEY}"
+recordstv_path "demos"
