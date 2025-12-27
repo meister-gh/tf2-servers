@@ -1,6 +1,6 @@
 ARG REGISTRY=ghcr.io
 ARG OWNER=melkortf
-ARG TF2_SOURCEMOD_TAG=latest
+ARG TF2_PLUGINS_BASE_TAG=latest
 
 FROM ubuntu:22.04 AS plugins
 SHELL ["/bin/bash", "-c"]
@@ -23,14 +23,6 @@ ARG SOAP_DM_CHECKSUM=1d9f15dd9899057eaff43ea7b50976b119db94a89f1e678c19839785f49
 ADD --checksum=sha256:${SOAP_DM_CHECKSUM} ${SOAP_DM_URL} .
 RUN unzip -q "${SOAP_DM_FILE_NAME}" -d "${PLUGIN_INSTALL_DIR}/"
 
-# tf2-comp-fixes
-ARG COMP_FIXES_FILE_NAME=tf2-comp-fixes.zip
-ARG COMP_FIXES_VERSION=1.16.19
-ARG COMP_FIXES_URL=https://github.com/ldesgoui/tf2-comp-fixes/releases/download/v${COMP_FIXES_VERSION}/${COMP_FIXES_FILE_NAME}
-ARG COMP_FIXES_CHECKSUM=4a54bdafda9d8f462ac5bfcc9d402840f1954dbfacdb5d17a06e20b796e760e1
-ADD --checksum=sha256:${COMP_FIXES_CHECKSUM} ${COMP_FIXES_URL} .
-RUN unzip -q -o "${COMP_FIXES_FILE_NAME}" -d "${PLUGIN_INSTALL_DIR}/"
-
 # MGEMod
 ARG MGEMOD_FILE_NAME=mge.zip
 ARG MGEMOD_VERSION=v3.0.7
@@ -38,14 +30,6 @@ ARG MGEMOD_URL=https://github.com/sapphonie/MGEMod/releases/download/${MGEMOD_VE
 ARG MGEMOD_CHECKSUM=cb0abb7915d2e3074a80f6e4bd28423cfe038e89f85dc7acd55652c8bd229117
 ADD --checksum=sha256:${MGEMOD_CHECKSUM} ${MGEMOD_URL} .
 RUN unzip -q -n "${MGEMOD_FILE_NAME}" -d "${PLUGIN_INSTALL_DIR}/"
-
-# SM_Neocurl
-ARG NEOCURL_FILE_NAME=sm-neocurl-repack.zip
-ARG NEOCURL_VERSION=v2.0.1-beta1
-ARG NEOCURL_URL=https://github.com/sapphonie/SM-neocurl-ext/releases/download/${NEOCURL_VERSION}/${NEOCURL_FILE_NAME}
-ARG NEOCURL_CHECKSUM=cddbef00ca5b4b2a14c35fd062fe18586fb42f68c6d6366bf74f5b72a5734e44
-ADD --checksum=sha256:${NEOCURL_CHECKSUM} ${NEOCURL_URL} .
-RUN unzip -q -o "${NEOCURL_FILE_NAME}" -d "${PLUGIN_INSTALL_DIR}/addons/sourcemod/"
 
 # F2's SourceMod Plugins
 ARG F2_SOURCEMOD_PLUGINS_FILE_NAME=f2-sourcemod-plugins.zip
@@ -127,22 +111,6 @@ ARG SRCTV_PLUS_VDF_CHECKSUM=886287c911200c1f2f0effc232fd01740cc0913cd92723fdf27c
 ADD --checksum=sha256:${SRCTV_PLUS_VDF_CHECKSUM} ${SRCTV_PLUS_VDF_URL} .
 RUN cp "${SRCTV_PLUS_VDF_FILE_NAME}" "${PLUGIN_INSTALL_DIR}/addons/${SRCTV_PLUS_VDF_FILE_NAME}"
 
-# Map Downloader (pinned to commit)
-ARG MAPDOWNLOADER_COMMIT=729db2ea9e7f353ca67d2c7c19e1cd1dc473928c
-ARG MAPDOWNLOADER_PLUGIN_FILE_NAME=mapdownloader.smx
-ARG MAPDOWNLOADER_PLUGIN_URL=https://github.com/spiretf/mapdownloader/raw/${MAPDOWNLOADER_COMMIT}/plugin/${MAPDOWNLOADER_PLUGIN_FILE_NAME}
-ARG MAPDOWNLOADER_PLUGIN_CHECKSUM=53d4a64d40a939837dd3dfbf41aa3e682c421da44efb4f16c3db397aa2901ed2
-ADD --checksum=sha256:${MAPDOWNLOADER_PLUGIN_CHECKSUM} ${MAPDOWNLOADER_PLUGIN_URL} .
-RUN cp "${MAPDOWNLOADER_PLUGIN_FILE_NAME}" "${PLUGIN_INSTALL_DIR}/addons/sourcemod/plugins/${MAPDOWNLOADER_PLUGIN_FILE_NAME}"
-
-# STAC Anti-Cheat
-ARG STAC_FILE_NAME=stac.zip
-ARG STAC_VERSION=v6.3.8
-ARG STAC_URL=https://github.com/sapphonie/StAC-tf2/releases/download/${STAC_VERSION}/${STAC_FILE_NAME}
-ARG STAC_CHECKSUM=ec64fc4f697754038526591cc8ef6a99d331b5e962eac36d968dfb25c0c69957
-ADD --checksum=sha256:${STAC_CHECKSUM} ${STAC_URL} .
-RUN unzip -q -o "${STAC_FILE_NAME}" -d "${PLUGIN_INSTALL_DIR}/addons/sourcemod/"
-
 # Demos.tf (pinned to commit)
 ARG DEMOSTF_COMMIT=467a8858e642729c2bdbc769a28c7d450a2c1123
 ARG DEMOSTF_PLUGIN_FILE_NAME=demostf.smx
@@ -175,19 +143,16 @@ ARG WEBRCON_PLUGIN_CHECKSUM=74d2ee3f628260e77b495b6cb6c975d7e2bf8462cb7d967f14ad
 ADD --checksum=sha256:${WEBRCON_PLUGIN_CHECKSUM} ${WEBRCON_PLUGIN_URL} .
 RUN cp "${WEBRCON_PLUGIN_FILE_NAME}" "${PLUGIN_INSTALL_DIR}/addons/sourcemod/plugins/${WEBRCON_PLUGIN_FILE_NAME}"
 
-FROM ${REGISTRY}/${OWNER}/tf2-sourcemod/i386:${TF2_SOURCEMOD_TAG}
+FROM ${REGISTRY}/${OWNER}/tf2-plugins-base/i386:${TF2_PLUGINS_BASE_TAG}
 LABEL maintainer="garrappachc@gmail.com"
 
 ARG PLUGIN_INSTALL_DIR=/server/tf
 COPY --from=plugins --chown=tf2 "${PLUGIN_INSTALL_DIR}/" "${SERVER_DIR}/tf/"
 
-# Disable useless (and potentially harmful) plugins
-RUN mkdir -p "${SERVER_DIR}/tf/addons/sourcemod/plugins/disabled" \
-  && mv "${SERVER_DIR}/tf/addons/sourcemod/plugins/"{nextmap,funcommands,funvotes}.smx "${SERVER_DIR}/tf/addons/sourcemod/plugins/disabled/"
+# Disable nextmap plugin
+RUN mv "${SERVER_DIR}/tf/addons/sourcemod/plugins/nextmap.smx" "${SERVER_DIR}/tf/addons/sourcemod/plugins/disabled/"
 
 ENV DEMOS_TF_APIKEY=
 ENV LOGS_TF_APIKEY=
-ENV DOWNLOAD_URL=https://fastdl.arctic.tf/tf/
-ENV SM_MAP_DOWNLOAD_BASE=https://fastdl.arctic.tf/tf/maps/
 
 COPY cfg/* ${SERVER_DIR}/tf/cfg/
